@@ -1,0 +1,9 @@
+package org.cytoscape.gnc.model.businessobjects.utils;
+
+/**
+ * @license Apache License V2 <http://www.apache.org/licenses/LICENSE-2.0.html>
+ * @author Juan José Díaz Montaña
+ */
+public class Properties {
+    public static int infinity = 99;
+}
