@@ -10,10 +10,10 @@ public interface IGRN
 {
     public String getName();
     
-    public List<Node> getNodes();
+    public Node[] getNodes();
     
-    public Integer getNodeId(Node node);
-            
+    public Integer getNodeId(Node paramNode);
+    
     public List<Edge> getEdges();
     
     public float getDensity();

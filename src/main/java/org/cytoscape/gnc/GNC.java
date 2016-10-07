@@ -26,9 +26,9 @@ public class GNC extends AbstractCyActivator {
         CyServiceRegistrar serviceRegistrar = getService(context, CyServiceRegistrar.class);
         TaskManager taskManager = getService(context, TaskManager.class);
         
-        CySwing.init(swingApplication, serviceRegistrar); 
+        CySwing.init(swingApplication, serviceRegistrar);
         NetworkController.init(applicationManager);
-
+        
         // UI controls
         MenuAction menuAction = new MenuAction(taskManager);
         registerService(context, menuAction, CyAction.class, new Properties());

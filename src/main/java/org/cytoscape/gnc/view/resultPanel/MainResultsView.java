@@ -89,9 +89,9 @@ public class MainResultsView extends javax.swing.JPanel implements CytoPanelComp
 
         resultsTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                { "Nodes", result.getNetwork().getNodes().size(), result.getDb().getNodes().size() },
+                { "Nodes", result.getNetwork().getNodes().length, result.getDb().getNodes().length },
                 { "Edges", result.getNetwork().getEdges().size(), result.getDb().getEdges().size() },
-                { "Density", String.format("%.2f", result.getNetwork().getDensity()), String.format("%.2f", result.getDb().getDensity()) }
+                { "Density", String.format("%.3f", result.getNetwork().getDensity()), String.format("%.3f", result.getDb().getDensity()) }
             },
             new String [] {
                 "", "Input Network", "Biological Database"

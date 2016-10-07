@@ -5,7 +5,7 @@ package org.cytoscape.gnc.model.businessobjects.exceptions;
  * @author Juan José Díaz Montaña
  */
 public class DatabaseParsingException extends RuntimeException {
-    
+
     /**
      * This field holds the exception ex if the
      * ClassNotFoundException(String s, Throwable ex) constructor was
@@ -14,9 +14,9 @@ public class DatabaseParsingException extends RuntimeException {
      * @since 1.2
      */
     private final Throwable ex;
-    
+        
     private static final String DefaultMessage = "The database file provided couldn't be parsed.";
-  
+    
     /**
      * Constructs a <code>DatabaseParsingException</code> with the
      * default detail message and optional exception that was
@@ -42,6 +42,7 @@ public class DatabaseParsingException extends RuntimeException {
         super(s, null);  //  Disallow initCause
         this.ex = ex;
     }
+
     /**
      * Returns the exception that was raised if an error occurred while
      * attempting to load the class. Otherwise, returns <tt>null</tt>.
@@ -56,7 +57,7 @@ public class DatabaseParsingException extends RuntimeException {
     public Throwable getException() {
         return ex;
     }
-
+    
     /**
      * Returns the cause of this exception (the exception that was raised
      * if an error occurred while attempting to load the class; otherwise

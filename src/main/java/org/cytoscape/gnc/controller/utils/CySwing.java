@@ -1,5 +1,7 @@
 package org.cytoscape.gnc.controller.utils;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Properties;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -19,7 +21,7 @@ import org.cytoscape.service.util.CyServiceRegistrar;
 public class CySwing {
     private static CySwingApplication cySwingApplication;
     private static CyServiceRegistrar serviceRegistrar;
-    
+
     private static JFrame CytoscapeJFrame;
     private static CytoPanel eastPanel;
     
@@ -27,7 +29,7 @@ public class CySwing {
         CySwing.cySwingApplication = cySwingApplication;
         CySwing.serviceRegistrar = serviceRegistrar;
     }
-
+    
     public static JFrame getDesktopJFrame() {
         if (CytoscapeJFrame == null) {
             CytoscapeJFrame = cySwingApplication.getJFrame();
@@ -55,9 +57,9 @@ public class CySwing {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                dialog.addWindowListener(new WindowAdapter() {
                     @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
+                    public void windowClosing(WindowEvent e) {
                         dialog.dispose();
                     }
                 });

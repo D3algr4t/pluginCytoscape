@@ -1,42 +1,40 @@
 package org.cytoscape.gnc.model.businessobjects;
 
-import org.cytoscape.gnc.model.businessobjects.utils.Properties;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import org.cytoscape.gnc.model.businessobjects.utils.Properties;
 
 /**
  * @license Apache License V2 <http://www.apache.org/licenses/LICENSE-2.0.html>
  * @author Juan José Díaz Montaña
  */
-public class GRN implements IGRN
-{
+public class GRN implements IGRN {
     private final String name;
-    private final List<Node> nodes;
-    private final Map<Node, Integer> nodesMap = new HashMap<Node, Integer>();
+    private final Node[] nodes;
+    private final Map<Node, Integer> nodesMap = new HashMap();
     private final List<Edge> edges;
-
-    public GRN(String name, List<Node> nodes, List<Edge> edges) {
+    
+    public GRN(String name, Node[] nodes, List<Edge> edges) {
         this.name = name;
         this.nodes = nodes;
         this.edges = edges;
     }
-    
+
     @Override
     public String getName() {
         return name;
     }
-    
+ 
     @Override
-    public List<Node> getNodes()
-    {
+    public Node[] getNodes() {
         return nodes;
     }
-    
+
     @Override
-    public Integer getNodeId(Node node)
-    {
+    public Integer getNodeId(Node node) {
         if (nodesMap.isEmpty()) {
             int i = 0;
             for (Node node1 : nodes) {
@@ -47,40 +45,40 @@ public class GRN implements IGRN
     }
 
     @Override
-    public List<Edge> getEdges()
-    {
+    public List<Edge> getEdges() {
         return edges;
     }
- 
-    @Override
-    public float getDensity() {
-        return 2 * (float) edges.size() / (nodes.size() * (nodes.size() - 1));
-    }
-    
-    @Override
-    public int[][] getAdjMatrix()
+
+    @Override  
+    public float getDensity()
     {
-        int[][] m = new int[nodes.size()][nodes.size()];
+        return 2.0F * (float)this.edges.size() / (this.nodes.length * (this.nodes.length - 1));
+    }    
 
-        for (int i = 0; i < nodes.size(); i++) {
-            Node node = nodes.get(i);
-            List neighbours = new ArrayList();
-
+    @Override
+    public int[][] getAdjMatrix()  {
+        int[][] m = new int[nodes.length][nodes.length];
+        
+        for (int i = 0; i < nodes.length; i++) {
+            Node node = nodes[i];
+            Set neighbours = new HashSet();
+            
             for (Edge edge : node.getEdges()) {
-               neighbours.add(edge.getSource().equals(node.getName()) ? edge.getTarget() : edge.getSource()); 
+                neighbours.add(edge.getSource().equals(node.getName()) ? edge.getTarget() : edge.getSource());
             }
-
-            for (int j = 0; j < nodes.size(); j++) {
-                if (i == j) {
-                    m[i][j] = 0;
-                } else if (neighbours.contains((nodes.get(j)).getName())) {
+            
+            m[i][i] = 0;
+            for (int j = i + 1; j < nodes.length; j++) {
+                if (neighbours.contains(nodes[j].getName())) {
                     m[i][j] = 1;
+                    m[j][i] = 1;
                 } else {
                     m[i][j] = Properties.infinity;
+                    m[j][i] = Properties.infinity;
                 }
             }
         }
-
+        
         return m;
     }
 }

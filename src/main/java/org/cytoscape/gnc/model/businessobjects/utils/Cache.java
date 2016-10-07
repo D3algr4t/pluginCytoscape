@@ -11,11 +11,11 @@ import java.util.Set;
  */
 public class Cache<T> {
     private final Map<T, T> cache = new HashMap<T, T>();
-    
+
     public T get(T obj) {
         return cache.get(obj);
     }
-
+    
     public void add(T obj) {
         cache.put(obj, obj);
     }
@@ -25,10 +25,9 @@ public class Cache<T> {
         if (cachedObj != null) {
             return cachedObj;
         }
-        else {
-            add(obj);
-            return obj;
-        }
+        
+        add(obj);
+        return obj;
     }
     
     public void clear() {

@@ -1,9 +1,11 @@
 package org.cytoscape.gnc.controller.tasks;
 
+import java.io.BufferedReader;
 import org.cytoscape.gnc.controller.NetworkController;
 import org.cytoscape.gnc.controller.ResultPanelController;
 import org.cytoscape.gnc.controller.utils.CySwing;
 import org.cytoscape.gnc.controller.utils.CytoscapeTaskMonitor;
+import org.cytoscape.gnc.controller.utils.NetworkAdapter;
 import org.cytoscape.gnc.model.businessobjects.GNCResult;
 import org.cytoscape.gnc.model.businessobjects.IGRN;
 import org.cytoscape.gnc.model.businessobjects.utils.ProgressMonitor;
@@ -16,10 +18,14 @@ import org.cytoscape.work.TaskMonitor;
  * @author Juan José Díaz Montaña
  */
 public class ExecuteGNCTask extends AbstractTask {
-    private final IGRN db;
+    private GNC gnc;
+    private final String dbName;
+    private final BufferedReader br;
     
-    public ExecuteGNCTask(IGRN db) {
-        this.db = db;
+    public ExecuteGNCTask(String dbName, BufferedReader br)
+    {
+        this.dbName = dbName;
+        this.br = br;
     }
     
     @Override
@@ -31,29 +37,31 @@ public class ExecuteGNCTask extends AbstractTask {
             CySwing.displayPopUpMessage(ex.getMessage());
             return;
         }
-        if (db == null) {
+
+        if (br == null) {
             CySwing.displayPopUpMessage("No database selected.");
             return;
         }
+
         try {
             ProgressMonitor pm = new CytoscapeTaskMonitor(tm);
-            GNC gnc = new GNC(pm);
+            gnc = new GNC(pm);
+            IGRN db = NetworkAdapter.FileToGRN(this.dbName, this.br);
             tm.setTitle("Executing GNC analysis");
             GNCResult result = gnc.execute(network.getGraph(), db);
-            if (!gnc.isInterrupted()) {
-                pm.setStatus("Displaying the  results.");
-                new ResultPanelController(network, result);
-                CySwing.displayPopUpMessage("GNC anlysis succesfully completed!");
-            }
+            pm.setStatus("Displaying the results.");
+            new ResultPanelController(network, result);
+            CySwing.displayPopUpMessage("GNC anlysis succesfully completed!");
         } catch (Exception ex) {
             CySwing.displayPopUpMessage(ex.getMessage());
         }
-    } 
+    }
     
     @Override
     public void cancel() {
-//        gnc.interrupt();
+        if (gnc != null) {
+            gnc.interrupt();
+        }
         super.cancel();
-        CySwing.displayPopUpMessage("GNC execution was cancelled");
     }
 }

@@ -13,24 +13,24 @@ public class CytoscapeTaskMonitor implements ProgressMonitor {
     public CytoscapeTaskMonitor(TaskMonitor tm) {
         this.tm = tm;
     }
+    
     @Override
     public String getStatus() {
         throw new UnsupportedOperationException("Not supported.");
     }
-
+    
     @Override
     public void setStatus(String status) {
         tm.setStatusMessage(status);
     }
-
+    
     @Override
     public float getProgress() {
         throw new UnsupportedOperationException("Not supported.");
     }
-
+    
     @Override
     public void setProgress(float progress) {
         tm.setProgress(progress);
     }
-    
 }

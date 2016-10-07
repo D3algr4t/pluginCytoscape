@@ -2,15 +2,13 @@ package org.cytoscape.gnc.view.configurationDialogs;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import org.cytoscape.gnc.controller.tasks.ExecuteGNCTask;
 import org.cytoscape.gnc.controller.utils.CySwing;
-import org.cytoscape.gnc.controller.utils.NetworkAdapter;
-import org.cytoscape.work.TaskIterator;
+import org.cytoscape.work.Task;
 import org.cytoscape.work.TaskManager;
 
 /**
@@ -28,22 +26,18 @@ public class ConfigurationDialog extends javax.swing.JDialog {
      */
     public ConfigurationDialog(TaskManager taskManager) {
         super(CySwing.getDesktopJFrame(), true);
-        preloadedDatabases.put("BD3 (Test)", "/databases/BD3.txt");
-        preloadedDatabases.put("Biogrid (Human)", "/databases/Biogrid-Human.txt");
-        preloadedDatabases.put("Biogrid (Yeast)", "/databases/Biogrid-Yeast.txt");
+        preloadedDatabases.put("Biogrid (Human)", "/databases/BioGrid-Human.txt");
+        preloadedDatabases.put("Biogrid (Yeast)", "/databases/BioGrid-Yeast.txt");
         preloadedDatabases.put("GeneMania (Human)", "/databases/GeneMania-Human.txt");
         preloadedDatabases.put("GeneMania (Yeast)", "/databases/GeneMania-Yeast.txt");
         preloadedDatabases.put("SGD", "/databases/SGD.txt");
         preloadedDatabases.put("YeastNet (V2)", "/databases/YeastNetV2.txt");
         preloadedDatabases.put("HSA000203", "/databases/hsa000203.txt");
         
-        databaseListModel = new DefaultListModel<String>() {
-            String[] strings = preloadedDatabases.keySet().toArray(new String[preloadedDatabases.size()]);
-            @Override
-            public int getSize() { return strings.length; }
-            @Override
-            public String getElementAt(int i) { return strings[i]; }
-        };
+        databaseListModel = new DefaultListModel();
+        for (String database : preloadedDatabases.keySet()) {
+            databaseListModel.addElement(database);
+        }
         
         initComponents();
         setLocationRelativeTo(CySwing.getDesktopJFrame());
@@ -152,30 +146,42 @@ public class ConfigurationDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void runGNCButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runGNCButtonActionPerformed
-        String database = databaseList.getSelectedValue().toString();
+        String database = this.databaseList.getSelectedValue() != null
+                ? this.databaseList.getSelectedValue().toString()
+                : null;
+        setVisible(false);
+
         if (database == null) {
             CySwing.displayPopUpMessage("No database selected.");
             return;
         }
-        this.setVisible(false);
         
-        if (preloadedDatabases.containsKey(database)) {
-            database = preloadedDatabases.get(database);
+        BufferedReader br;
+        if (this.preloadedDatabases.containsKey(database)) {
+            br = new BufferedReader(new java.io.InputStreamReader(getClass().getClassLoader().getResourceAsStream((String)this.preloadedDatabases.get(database))));
+        } else {
+            try {
+                br = new BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(database)));
+                database = new File(database).getName();
+            } catch (java.io.FileNotFoundException ex) {
+                CySwing.displayPopUpMessage("Database file not found.");
+                customDatabases.remove(database);
+                databaseListModel.removeElement(database);
+                return;
+            }
         }
         
-        BufferedReader br = new BufferedReader(new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream(database)));
-        
-        taskManager.execute(new TaskIterator(new ExecuteGNCTask(NetworkAdapter.FileToGRN(database, br))));
+        taskManager.execute(new org.cytoscape.work.TaskIterator(new Task[] { new ExecuteGNCTask(database, br) }));
     }//GEN-LAST:event_runGNCButtonActionPerformed
 
     private void loadCustomDatabaseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadCustomDatabaseButtonActionPerformed
         JFileChooser fileChooser = new JFileChooser();
         int returnValue = fileChooser.showOpenDialog(this);
-        if (returnValue == JFileChooser.APPROVE_OPTION) {
-          File selectedFile = fileChooser.getSelectedFile();
-          customDatabases.put(selectedFile.getName(), selectedFile.getAbsolutePath());
-          databaseListModel.addElement(selectedFile.getAbsolutePath());
-          databaseList.setSelectedValue(selectedFile.getAbsolutePath(), true);
+        if (returnValue == 0) {
+            File selectedFile = fileChooser.getSelectedFile();
+            customDatabases.put(selectedFile.getAbsolutePath(), selectedFile.getAbsolutePath());
+            databaseListModel.addElement(selectedFile.getAbsolutePath());
+            databaseList.setSelectedValue(selectedFile.getAbsolutePath(), true);
         }
     }//GEN-LAST:event_loadCustomDatabaseButtonActionPerformed
     

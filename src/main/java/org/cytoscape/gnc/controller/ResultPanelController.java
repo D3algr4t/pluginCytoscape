@@ -12,7 +12,7 @@ import org.cytoscape.model.CyNetwork;
  * @author Juan José Díaz Montaña
  */
 public class ResultPanelController {
-    public static final Map<CyNetwork, ResultPanelController> panels = new HashMap<CyNetwork, ResultPanelController>();
+    public static final Map<CyNetwork, ResultPanelController> panels = new HashMap();
     
     private final NetworkController network;
     private GNCResult result;
@@ -30,7 +30,7 @@ public class ResultPanelController {
     }
     
     public void dispose() {
-        result = null; 
+        result = null;
         
         CySwing.removePanel(rv);
         rv = null;

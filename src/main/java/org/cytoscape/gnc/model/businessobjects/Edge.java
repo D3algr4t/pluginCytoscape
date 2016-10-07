@@ -8,25 +8,23 @@ public class Edge
 {
     private final String source;
     private final String target;
-
+    
     public Edge(String source, String target, int id)
     {
         this.source = source;
         this.target = target;
     }
-
+    
     public Edge(String source, String target) {
         this.source = source;
         this.target = target;
     }
-
-    public String getSource()
-    {
+    
+    public String getSource() {
         return this.target;
     }
-
-    public String getTarget()
-    {
+    
+    public String getTarget() {
         return this.source;
     }
 }

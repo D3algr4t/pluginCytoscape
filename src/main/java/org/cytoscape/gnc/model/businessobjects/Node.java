@@ -7,16 +7,15 @@ import java.util.List;
  * @license Apache License V2 <http://www.apache.org/licenses/LICENSE-2.0.html>
  * @author Juan José Díaz Montaña
  */
-public class Node
-{
+public class Node {
     private final String name;
     private final List<Edge> edges = new ArrayList();
-
+    
     public Node(String name)
     {
         this.name = name;
     }
-
+    
     public List<Edge> getEdges()
     {
         return this.edges;
@@ -25,24 +24,23 @@ public class Node
     public void addEdge(Edge edge) {
         this.edges.add(edge);
     }
-
+    
     public String getName() {
         return this.name;
     }
-
+    
     @Override
     public boolean equals(Object obj)
     {
-        if (obj == null || this.getClass() != obj.getClass())
-        {
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-
+        
         Node other = (Node)obj;
-
+        
         return this.name == null ? other.name == null : this.name.equals(other.name);
     }
-
+    
     @Override
     public int hashCode()
     {

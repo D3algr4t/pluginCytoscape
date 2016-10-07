@@ -19,12 +19,12 @@ import org.cytoscape.model.CyNode;
  * @license Apache License V2 <http://www.apache.org/licenses/LICENSE-2.0.html>
  * @author Juan José Díaz Montaña
  */
-public class NetworkAdapter {    
+public class NetworkAdapter {
     public static IGRN CyNetworkToGRN(CyNetwork network) {
         List<CyNode> cyNodes = network.getNodeList();
         List<CyEdge> cyEdges = network.getEdgeList();
         if (cyNodes.isEmpty() || cyEdges.isEmpty()) {
-            throw new IllegalArgumentException("The current network view seems to be empty."); 
+            throw new IllegalArgumentException("The current network view seems to be empty.");
         }
         
         String name = network.getRow(network).get(CyNetwork.NAME, String.class);
@@ -35,30 +35,30 @@ public class NetworkAdapter {
             String nodeName = network.getRow(cyNode).get(CyNetwork.NAME, String.class);
             nodes.put(nodeName, new Node(nodeName));
         }
-        for(CyEdge cyEdge : cyEdges) {
+        for (CyEdge cyEdge : cyEdges) {
             String sourceName = network.getRow(cyEdge.getSource()).get(CyNetwork.NAME, String.class);
             String targetName = network.getRow(cyEdge.getTarget()).get(CyNetwork.NAME, String.class);
             Edge edge = new Edge(sourceName, targetName);
             edges.add(edge);
             nodes.get(sourceName).addEdge(edge);
             nodes.get(targetName).addEdge(edge);
-            
         }
-        return new GRN(name, new ArrayList(nodes.values()), edges);
+        
+        return new GRN(name, (Node[])nodes.values().toArray(new Node[nodes.size()]), edges);
     }
     
     public static IGRN FileToGRN(String file, BufferedReader br) {
-        Cache<Node> nodesCache = new Cache<Node>();//TODO set
-        List<Edge> edges = new ArrayList<Edge>();
-
+        Cache<Node> nodesCache = new Cache();
+        List<Edge> edges = new ArrayList();
+        
         try {
-            String linea;
-
-            while ((linea = br.readLine()) != null) {
-                String[] nodeNames = linea.split(",");
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] nodeNames = line.split(",");
                 if (nodeNames.length != 2) {
                     continue;
                 }
+
                 Node node1 = nodesCache.getOrAdd(new Node(nodeNames[0]));
                 Node node2 = nodesCache.getOrAdd(new Node(nodeNames[1]));
                 Edge edge = new Edge(node1.getName(), node2.getName());
@@ -70,6 +70,6 @@ public class NetworkAdapter {
             throw new DatabaseParsingException(e);
         }
         
-        return new GRN(file, new ArrayList(nodesCache.getAll()), edges);
+        return new GRN(file, nodesCache.getAll().toArray(new Node[nodesCache.size()]), edges);
     }
 }

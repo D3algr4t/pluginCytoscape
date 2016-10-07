@@ -14,9 +14,9 @@ public class AnalysisErrorException extends RuntimeException {
      * @since 1.2
      */
     private final Throwable ex;
-    
+
     private static final String DefaultMessage = "Something went wrong during the analysis.";
-  
+
     /**
      * Constructs a <code>DataBaseException</code> with the
      * default detail message and optional exception that was
@@ -27,6 +27,18 @@ public class AnalysisErrorException extends RuntimeException {
      */
     public AnalysisErrorException(Throwable ex) {
         this(DefaultMessage, null);
+    }
+
+    /**
+     * Constructs a <code>DataBaseException</code> with the
+     * specified detail message and optional exception that was
+     * raised while loading the class.
+     *
+     * @param s the detail message
+     * @since 1.2
+     */
+    public AnalysisErrorException(String s) {
+        this(s, null);
     }
     
     /**
@@ -39,9 +51,10 @@ public class AnalysisErrorException extends RuntimeException {
      * @since 1.2
      */
     public AnalysisErrorException(String s, Throwable ex) {
-        super(s, null);  //  Disallow initCause
+        super(s, null); // Disallow initCause
         this.ex = ex;
     }
+
     /**
      * Returns the exception that was raised if an error occurred while
      * attempting to load the class. Otherwise, returns <tt>null</tt>.

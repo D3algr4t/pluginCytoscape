@@ -12,7 +12,6 @@ import org.cytoscape.view.model.CyNetworkView;
  */
 public final class NetworkController {
     private static CyApplicationManager applicationManager;
-
     private final CyNetwork network;
     private final CyNetworkView networkView;
     
@@ -32,15 +31,15 @@ public final class NetworkController {
             throw new InstantiationException("No network selected.");
         }
     }
-
+    
     public void dispose() {
     }
- 
+    
     public CyNetwork getCyNetwork() {
-       return network;
+        return network;
     }
-       
+    
     public IGRN getGraph() {
-       return NetworkAdapter.CyNetworkToGRN(network);
+        return NetworkAdapter.CyNetworkToGRN(network);
     }
 }
