@@ -1,11 +1,8 @@
 package org.cytoscape.gnc.model.businessobjects;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import org.cytoscape.gnc.model.businessobjects.utils.Properties;
 
 /**
  * @license Apache License V2 <http://www.apache.org/licenses/LICENSE-2.0.html>
@@ -53,32 +50,5 @@ public class GRN implements IGRN {
     public float getDensity()
     {
         return 2.0F * (float)this.edges.size() / (this.nodes.length * (this.nodes.length - 1));
-    }    
-
-    @Override
-    public int[][] getAdjMatrix()  {
-        int[][] m = new int[nodes.length][nodes.length];
-        
-        for (int i = 0; i < nodes.length; i++) {
-            Node node = nodes[i];
-            Set neighbours = new HashSet();
-            
-            for (Edge edge : node.getEdges()) {
-                neighbours.add(edge.getSource().equals(node.getName()) ? edge.getTarget() : edge.getSource());
-            }
-            
-            m[i][i] = 0;
-            for (int j = i + 1; j < nodes.length; j++) {
-                if (neighbours.contains(nodes[j].getName())) {
-                    m[i][j] = 1;
-                    m[j][i] = 1;
-                } else {
-                    m[i][j] = Properties.infinity;
-                    m[j][i] = Properties.infinity;
-                }
-            }
-        }
-        
-        return m;
     }
 }

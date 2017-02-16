@@ -13,6 +13,8 @@ import org.cytoscape.gnc.model.businessobjects.exceptions.AnalysisErrorException
 import org.cytoscape.gnc.model.businessobjects.utils.Position;
 import org.cytoscape.gnc.model.businessobjects.utils.ProgressMonitor;
 import org.cytoscape.gnc.model.businessobjects.utils.Properties;
+import org.cytoscape.gnc.model.logic.graphs.algorithms.DistanceMatrixAlgorithm;
+import org.cytoscape.gnc.model.logic.graphs.algorithms.FloydWarshall;
 
 /**
  * @license Apache License V2 <http://www.apache.org/licenses/LICENSE-2.0.html>
@@ -22,9 +24,11 @@ public class GNC {
     protected ProgressMonitor pm;
     protected boolean isInterrupted = false;
     private final int maxThreads = Runtime.getRuntime().availableProcessors();
+    private final DistanceMatrixAlgorithm distanceMatrixAlgorithm;
     
     public GNC(ProgressMonitor pm) {
         this.pm = pm;
+        this.distanceMatrixAlgorithm = new FloydWarshall();
     }
     
     public void interrupt() {
@@ -59,14 +63,20 @@ public class GNC {
             Future<int[][]> networkMatrixCallable = pool.submit(new Callable() {
                 @Override
                 public int[][] call() throws InterruptedException {
-                    return network.getNodes().length >= db.getNodes().length ?getDistanceMatrix(network, pm) : getDistanceMatrix(network);
+                    return network.getNodes().length >= db.getNodes().length 
+                        ? distanceMatrixAlgorithm.getDistanceMatrix(network, pm)
+                        : distanceMatrixAlgorithm.getDistanceMatrix(network);
+
                 }
             });
 
             Future<int[][]> dbMatrixCallable = pool.submit(new Callable() {
                 @Override
                 public int[][] call() throws InterruptedException {
-                    return network.getNodes().length < db.getNodes().length ? getDistanceMatrix(db, pm) : getDistanceMatrix(db);
+                    return network.getNodes().length < db.getNodes().length
+                        ? distanceMatrixAlgorithm.getDistanceMatrix(db, pm)
+                        : distanceMatrixAlgorithm.getDistanceMatrix(db);
+
                 }
             });
 
@@ -128,58 +138,7 @@ public class GNC {
             throw new AnalysisErrorException(ex);
         }
     }
-    
-    private int[][] getDistanceMatrix(IGRN grn) throws InterruptedException {
-        int[][] adjMatrix = grn.getAdjMatrix();
-        for (int k = 0; k < adjMatrix.length; k++) {
-            int[] column = adjMatrix[k];
-            for (int i = 0; i < adjMatrix.length; i++) {
-                int[] row = adjMatrix[i];
-                for (int j = i + 1; j < adjMatrix.length; j++) {
-                    if (isInterrupted) {
-                        throw new InterruptedException("GNC execution was cancelled");
-                    }
-                    int currentDistance = row[j];
-                    if (currentDistance >= 2) {
-                        int newDistance = row[k] + column[j];
-                        
-                        if (currentDistance > newDistance) {
-                            row[j] = newDistance;
-                            adjMatrix[j][i] = newDistance;
-                        }
-                    }
-                }
-            }
-        }
-        return adjMatrix;
-    }
-    
-    private int[][] getDistanceMatrix(IGRN grn, ProgressMonitor pm) throws InterruptedException {
-        int[][] adjMatrix = grn.getAdjMatrix();
-        for (int k = 0; k < adjMatrix.length; k++) {
-            pm.setProgress(0.8F * k / adjMatrix.length);
-            int[] column = adjMatrix[k];
-            for (int i = 0; i < adjMatrix.length; i++) {
-                int[] row = adjMatrix[i];
-                for (int j = i + 1; j < adjMatrix.length; j++) {
-                    if (isInterrupted) {
-                        throw new InterruptedException("GNC execution was cancelled");
-                    }
-                    int currentDistance = row[j];
-                    if (currentDistance >= 2) {
-                        int newDistance = row[k] + column[j];
-                        
-                        if (currentDistance > newDistance) {
-                            row[j] = newDistance;
-                            adjMatrix[j][i] = newDistance;
-                        }
-                    }
-                }
-            }
-        }
-        return adjMatrix;
-    }
-    
+
     private int calculateFP(IGRN network, IGRN db) throws InterruptedException {
         int FP = 0;
         for (int i = 0; i < network.getEdges().size(); i++) {
@@ -190,7 +149,7 @@ public class GNC {
                 }
                 Edge inA = (Edge)network.getEdges().get(i);
                 Edge bdA = (Edge)db.getEdges().get(j);
-                if ((inA.getTarget().equalsIgnoreCase(bdA.getTarget())) && (inA.getSource().equalsIgnoreCase(bdA.getSource()))) {
+                if ((inA.getTarget().equals(bdA.getTarget())) && (inA.getSource().equals(bdA.getSource()))) {
                     enc = true;
                     break;
                 }
@@ -212,7 +171,7 @@ public class GNC {
                 }
                 Edge inA = (Edge)network.getEdges().get(j);
                 Edge bdA = (Edge)db.getEdges().get(i);
-                if ((inA.getTarget().equalsIgnoreCase(bdA.getTarget())) && (inA.getSource().equalsIgnoreCase(bdA.getSource()))) {
+                if ((inA.getTarget().equals(bdA.getTarget())) && (inA.getSource().equals(bdA.getSource()))) {
                     enc = true;
                     break;
                 }

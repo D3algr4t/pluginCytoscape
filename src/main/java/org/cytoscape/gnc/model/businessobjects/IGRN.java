@@ -17,6 +17,4 @@ public interface IGRN
     public List<Edge> getEdges();
     
     public float getDensity();
-    
-    public int[][] getAdjMatrix();
 }
