@@ -28,7 +28,7 @@ public class Node {
     public String getName() {
         return this.name;
     }
-    
+
     @Override
     public boolean equals(Object obj)
     {
@@ -38,7 +38,7 @@ public class Node {
         
         Node other = (Node)obj;
         
-        return this.name == null ? other.name == null : this.name.equals(other.name);
+        return this.name == null ? other.name == null : this.name.equalsIgnoreCase(other.name);
     }
     
     @Override

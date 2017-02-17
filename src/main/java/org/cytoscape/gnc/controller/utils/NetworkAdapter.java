@@ -1,6 +1,7 @@
 package org.cytoscape.gnc.controller.utils;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,15 +31,18 @@ public class NetworkAdapter {
         String name = network.getRow(network).get(CyNetwork.NAME, String.class);
         Map<String, Node> nodes = new HashMap<String, Node>(cyNodes.size());
         List<Edge> edges = new ArrayList<Edge>(cyEdges.size());
-        
+
         for (CyNode cyNode : cyNodes) {
             String nodeName = network.getRow(cyNode).get(CyNetwork.NAME, String.class);
             nodes.put(nodeName, new Node(nodeName));
         }
+
         for (CyEdge cyEdge : cyEdges) {
             String sourceName = network.getRow(cyEdge.getSource()).get(CyNetwork.NAME, String.class);
             String targetName = network.getRow(cyEdge.getTarget()).get(CyNetwork.NAME, String.class);
-            Edge edge = new Edge(sourceName, targetName);
+            Node source = nodes.get(sourceName);
+            Node target = nodes.get(targetName);
+            Edge edge = new Edge(source, target);
             edges.add(edge);
             nodes.get(sourceName).addEdge(edge);
             nodes.get(targetName).addEdge(edge);
@@ -61,12 +65,12 @@ public class NetworkAdapter {
 
                 Node node1 = nodesCache.getOrAdd(new Node(nodeNames[0]));
                 Node node2 = nodesCache.getOrAdd(new Node(nodeNames[1]));
-                Edge edge = new Edge(node1.getName(), node2.getName());
+                Edge edge = new Edge(node1, node2);
                 edges.add(edge);
                 node1.addEdge(edge);
                 node2.addEdge(edge);
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new DatabaseParsingException(e);
         }
         

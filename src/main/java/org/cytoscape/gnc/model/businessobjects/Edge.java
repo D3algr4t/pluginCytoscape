@@ -6,25 +6,19 @@ package org.cytoscape.gnc.model.businessobjects;
  */
 public class Edge
 {
-    private final String source;
-    private final String target;
+    private final Node source;
+    private final Node target;
     
-    public Edge(String source, String target, int id)
-    {
+    public Edge(Node source, Node target) {
         this.source = source;
         this.target = target;
     }
     
-    public Edge(String source, String target) {
-        this.source = source;
-        this.target = target;
-    }
-    
-    public String getSource() {
+    public Node getSource() {
         return this.target;
     }
     
-    public String getTarget() {
+    public Node getTarget() {
         return this.source;
     }
 }

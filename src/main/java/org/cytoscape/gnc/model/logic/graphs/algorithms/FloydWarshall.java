@@ -1,7 +1,6 @@
 package org.cytoscape.gnc.model.logic.graphs.algorithms;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Arrays;
 import org.cytoscape.gnc.model.businessobjects.Edge;
 import org.cytoscape.gnc.model.businessobjects.IGRN;
 import org.cytoscape.gnc.model.businessobjects.Node;
@@ -9,7 +8,7 @@ import org.cytoscape.gnc.model.businessobjects.utils.ProgressMonitor;
 import org.cytoscape.gnc.model.businessobjects.utils.Properties;
 
 /**
- *
+ * @license Apache License V2 <http://www.apache.org/licenses/LICENSE-2.0.html>
  * @author Juan José Díaz Montaña
  */
 public class FloydWarshall implements DistanceMatrixAlgorithm {
@@ -75,48 +74,20 @@ public class FloydWarshall implements DistanceMatrixAlgorithm {
     private int[][] getAdjMatrix(IGRN network)  {
         Node[] nodes = network.getNodes();
         int[][] m = new int[nodes.length][nodes.length];
-        
-        for (int i = 0; i < nodes.length; i++) {
-            Node node = nodes[i];
-            Set neighbours = new HashSet();
+
+        for (Node node : nodes) {
+            int i = network.getNodeId(node);
+            Arrays.fill(m[i], Properties.infinity);
+            m[i][i] = 0;
             
             for (Edge edge : node.getEdges()) {
-                neighbours.add(edge.getSource().equals(node.getName()) ? edge.getTarget() : edge.getSource());
-            }
-            
-            m[i][i] = 0;
-            for (int j = i + 1; j < nodes.length; j++) {
-                if (neighbours.contains(nodes[j].getName())) {
-                    m[i][j] = 1;
-                    m[j][i] = 1;
-                } else {
-                    m[i][j] = Properties.infinity;
-                    m[j][i] = Properties.infinity;
-                }
+                Node neighbour = edge.getSource().equals(node) ? edge.getTarget() : edge.getSource();
+                int j = network.getNodeId(neighbour);
+                m[i][j] = 1;
+                m[j][i] = 1;
             }
         }
         
         return m;
-
-//        Node[] nodes = network.getNodes();
-//        int[][] m = new int[nodes.length][nodes.length];
-//        
-//        for (int[] row : m) {
-//            for (int i = 0; i < row.length; i++) {
-//                row[i] = 99;
-//            }
-//        }
-//        
-//        for (int i = 0; i < nodes.length; i++) {
-//            Node node = nodes[i];
-//            
-//            m[i][i] = 0;
-//            for (Edge edge : node.getEdges()) {
-//                Node neighbour = edge.getSource().equals(node.getName()) ? edge.getTarget() : edge.getSource();
-//                m[i][neighbour.getIndex()] = 1;//edge.getWeight();
-//            }
-//        }
-//
-//        return m;
     }
 }
