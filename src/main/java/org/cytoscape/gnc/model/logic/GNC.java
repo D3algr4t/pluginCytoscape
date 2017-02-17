@@ -2,6 +2,8 @@ package org.cytoscape.gnc.model.logic;
 
 import java.util.HashMap;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -14,7 +16,7 @@ import org.cytoscape.gnc.model.businessobjects.utils.Position;
 import org.cytoscape.gnc.model.businessobjects.utils.ProgressMonitor;
 import org.cytoscape.gnc.model.businessobjects.utils.Properties;
 import org.cytoscape.gnc.model.logic.graphs.algorithms.DistanceMatrixAlgorithm;
-import org.cytoscape.gnc.model.logic.graphs.algorithms.FloydWarshall;
+import org.cytoscape.gnc.model.logic.graphs.algorithms.BreadthFirst;
 
 /**
  * @license Apache License V2 <http://www.apache.org/licenses/LICENSE-2.0.html>
@@ -23,16 +25,18 @@ import org.cytoscape.gnc.model.logic.graphs.algorithms.FloydWarshall;
 public class GNC {
     protected ProgressMonitor pm;
     protected boolean isInterrupted = false;
-    private final int maxThreads = Runtime.getRuntime().availableProcessors();
-    private final DistanceMatrixAlgorithm distanceMatrixAlgorithm;
+    private final int maxThreads = Runtime.getRuntime().availableProcessors();  
+    private final ExecutorService pool = Executors.newFixedThreadPool(maxThreads);
+    private final CompletionService completionService = new ExecutorCompletionService(pool);
+    private final DistanceMatrixAlgorithm distanceMatrixAlgorithm  = new BreadthFirst(completionService);
     
     public GNC(ProgressMonitor pm) {
         this.pm = pm;
-        this.distanceMatrixAlgorithm = new FloydWarshall();
     }
     
     public void interrupt() {
         isInterrupted = true;
+        pool.shutdownNow();
     }
     
     public boolean isInterrupted() {
@@ -59,41 +63,36 @@ public class GNC {
             }
             
             pm.setStatus("Calculating distance matrices");
-            ExecutorService pool = Executors.newFixedThreadPool(maxThreads > 4 ? 4 : maxThreads);
-            Future<int[][]> networkMatrixCallable = pool.submit(new Callable() {
-                @Override
-                public int[][] call() throws InterruptedException {
-                    return network.getNodes().length >= db.getNodes().length 
-                        ? distanceMatrixAlgorithm.getDistanceMatrix(network, pm)
-                        : distanceMatrixAlgorithm.getDistanceMatrix(network);
 
-                }
-            });
+            int[][] networkMatrix = distanceMatrixAlgorithm.getDistanceMatrix(network);
 
-            Future<int[][]> dbMatrixCallable = pool.submit(new Callable() {
-                @Override
-                public int[][] call() throws InterruptedException {
-                    return network.getNodes().length < db.getNodes().length
-                        ? distanceMatrixAlgorithm.getDistanceMatrix(db, pm)
-                        : distanceMatrixAlgorithm.getDistanceMatrix(db);
+            int[][] dbMatrix = distanceMatrixAlgorithm.getDistanceMatrix(db);
 
-                }
-            });
-
-            Future<Integer> calculateFPCallable = pool.submit(new Callable() {
+            Future<Integer> calculateFPCallable = completionService.submit(new Callable() {
                 @Override
                 public Integer call() throws InterruptedException {
                     return calculateFP(network, db);
                 } 
             });
-            Future<Integer> calculateFNCallable = pool.submit(new Callable() {
+
+            Future<Integer> calculateFNCallable = completionService.submit(new Callable() {
                 @Override
                 public Integer call() throws InterruptedException {
                     return calculateFN(network, db);
                 }
             });
-            int[][] networkMatrix = networkMatrixCallable.get();
-            int[][] dbMatrix = dbMatrixCallable.get();
+            
+            pool.shutdown();
+            
+            int threadCount = network.getNodes().length + db.getNodes().length + 2;
+            for (int i = 0; i < threadCount; i++) {
+                if (isInterrupted) {
+                    throw new InterruptedException("GNC execution was cancelled");
+                }
+                completionService.take().get();
+                pm.setProgress(0.8F * i++ / threadCount);
+            }
+            
             int FP = calculateFPCallable.get();
             int FN = calculateFNCallable.get();
             
