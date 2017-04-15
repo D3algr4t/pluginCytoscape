@@ -15,6 +15,7 @@ import org.cytoscape.gnc.model.businessobjects.utils.Cache;
 import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
+import org.cytoscape.model.CyRow;
 
 /**
  * @license Apache License V2 <http://www.apache.org/licenses/LICENSE-2.0.html>
@@ -33,8 +34,9 @@ public class NetworkAdapter {
         List<Edge> edges = new ArrayList<Edge>(cyEdges.size());
 
         for (CyNode cyNode : cyNodes) {
-            String nodeName = network.getRow(cyNode).get(CyNetwork.NAME, String.class);
-            nodes.put(nodeName, new Node(nodeName));
+            CyRow row = network.getRow(cyNode);
+            String nodeName = row.get(CyNetwork.NAME, String.class);
+            nodes.put(nodeName, new Node(nodeName, row));
         }
 
         for (CyEdge cyEdge : cyEdges) {
@@ -42,7 +44,8 @@ public class NetworkAdapter {
             String targetName = network.getRow(cyEdge.getTarget()).get(CyNetwork.NAME, String.class);
             Node source = nodes.get(sourceName);
             Node target = nodes.get(targetName);
-            Edge edge = new Edge(source, target);
+            CyRow row = network.getRow(cyEdge);
+            Edge edge = new Edge(source, target, row);
             edges.add(edge);
             nodes.get(sourceName).addEdge(edge);
             nodes.get(targetName).addEdge(edge);
@@ -63,9 +66,9 @@ public class NetworkAdapter {
                     continue;
                 }
 
-                Node node1 = nodesCache.getOrAdd(new Node(nodeNames[0]));
-                Node node2 = nodesCache.getOrAdd(new Node(nodeNames[1]));
-                Edge edge = new Edge(node1, node2);
+                Node node1 = nodesCache.getOrAdd(new Node(nodeNames[0], null));
+                Node node2 = nodesCache.getOrAdd(new Node(nodeNames[1], null));
+                Edge edge = new Edge(node1, node2, null);
                 edges.add(edge);
                 node1.addEdge(edge);
                 node2.addEdge(edge);

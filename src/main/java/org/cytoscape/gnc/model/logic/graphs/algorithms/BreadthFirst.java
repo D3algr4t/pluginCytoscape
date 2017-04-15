@@ -54,7 +54,7 @@ public class BreadthFirst implements DistanceMatrixAlgorithm {
                             if (isInterrupted) {
                                 throw new InterruptedException("GNC execution was cancelled");
                             }
-                            Node node2 = edge.getSource() == node1 ? edge.getTarget() : edge.getSource();
+                            Node node2 = edge.getSource().equals(node1) ? edge.getTarget() : edge.getSource();
                             int index2 = grn.getNodeId(node2);
                             if (!marked[index2]) {
                                 row[index2] = row[index1] + 1;

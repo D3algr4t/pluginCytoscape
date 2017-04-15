@@ -73,9 +73,11 @@ public class CySwing {
         selectPanel(panel);
     }
     
-    public static void removePanel(CytoPanelComponent panel) {
+    public static void removePanel(CytoPanelComponent panel, boolean hideResultsPanel) {
         serviceRegistrar.unregisterService(panel, CytoPanelComponent.class);
-        getEastPanel().setState(CytoPanelState.HIDE);
+        if (hideResultsPanel) {
+            getEastPanel().setState(CytoPanelState.HIDE);
+        }
     }
     
     public static void selectPanel(CytoPanelComponent panel) {

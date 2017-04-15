@@ -1,10 +1,15 @@
 package org.cytoscape.gnc.view.resultPanel;
 
 import java.awt.Component;
+import java.io.File;
+import java.io.IOException;
 import javax.swing.Icon;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import org.cytoscape.application.swing.CytoPanelComponent;
 import org.cytoscape.application.swing.CytoPanelName;
 import org.cytoscape.gnc.controller.ResultPanelController;
+import org.cytoscape.gnc.controller.utils.CySwing;
 import org.cytoscape.gnc.model.businessobjects.GNCResult;
 
 /**
@@ -49,6 +54,7 @@ public class MainResultsView extends javax.swing.JPanel implements CytoPanelComp
         closeResultsButton = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
         resultsTable = new javax.swing.JTable();
+        downloadResultsButton = new javax.swing.JButton();
 
         dbLabel.setFont(new java.awt.Font("Lucida Grande", 1, 14)); // NOI18N
         dbLabel.setText("Database");
@@ -66,9 +72,9 @@ public class MainResultsView extends javax.swing.JPanel implements CytoPanelComp
         networkName.setText(result.getNetwork().getName());
 
         commonGenesLabel.setFont(new java.awt.Font("Lucida Grande", 1, 14)); // NOI18N
-        commonGenesLabel.setText("Number Common Genes");
+        commonGenesLabel.setText("Common Genes");
 
-        commonGenes.setText(Integer.toString(result.getCommonGenes()));
+        commonGenes.setText(Integer.toString(result.getGenes().length));
 
         ppvLabel.setFont(new java.awt.Font("Lucida Grande", 1, 14)); // NOI18N
         ppvLabel.setText("PPV value");
@@ -114,6 +120,13 @@ public class MainResultsView extends javax.swing.JPanel implements CytoPanelComp
         });
         jScrollPane3.setViewportView(resultsTable);
 
+        downloadResultsButton.setText("Save coherence matrix");
+        downloadResultsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                downloadResultsButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -124,23 +137,6 @@ public class MainResultsView extends javax.swing.JPanel implements CytoPanelComp
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addComponent(jSeparator2)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(closeResultsButton)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(networkLabel)
-                            .addComponent(dbLabel))
-                        .addGap(34, 34, 34)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(databaseName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(networkName, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(commonGenesLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(commonGenes, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(fLabel)
                             .addComponent(ppvLabel)
@@ -149,7 +145,24 @@ public class MainResultsView extends javax.swing.JPanel implements CytoPanelComp
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(gnc, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(ppv, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(fMeasure, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(fMeasure, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(networkLabel)
+                                    .addComponent(dbLabel))
+                                .addGap(34, 34, 34)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(databaseName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(networkName, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(commonGenesLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(commonGenes, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(downloadResultsButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(closeResultsButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -182,9 +195,12 @@ public class MainResultsView extends javax.swing.JPanel implements CytoPanelComp
                     .addComponent(commonGenesLabel)
                     .addComponent(commonGenes))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(closeResultsButton))
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(downloadResultsButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(closeResultsButton)
+                .addContainerGap())
         );
 
         databaseName.getAccessibleContext().setAccessibleName("databaseName");
@@ -199,12 +215,32 @@ public class MainResultsView extends javax.swing.JPanel implements CytoPanelComp
         resultPanelController.dispose();
     }//GEN-LAST:event_closeResultsButtonActionPerformed
 
+    private void downloadResultsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_downloadResultsButtonActionPerformed
+        JFileChooser chooser = new JFileChooser();
+        chooser.setDialogTitle("Save coherence matrix");
+        chooser.setSelectedFile(new File("coherenceMatrix.csv"));
+        chooser.setFileFilter(new FileNameExtensionFilter("CSV file", "csv"));
+        int retrival = chooser.showSaveDialog(CySwing.getDesktopJFrame());
+        if (retrival == JFileChooser.APPROVE_OPTION) {
+            try {
+                String fileName = chooser.getSelectedFile().getCanonicalPath();
+                if (!fileName.endsWith(".csv")) {
+                    fileName += ".csv";
+                }
+                this.result.printMatrixToFile(fileName);
+            } catch (IOException ex) {
+                CySwing.displayPopUpMessage("Coudln't save the coherence matrix.");
+            }
+        }
+    }//GEN-LAST:event_downloadResultsButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton closeResultsButton;
     private javax.swing.JLabel commonGenes;
     private javax.swing.JLabel commonGenesLabel;
     private javax.swing.JLabel databaseName;
     private javax.swing.JLabel dbLabel;
+    private javax.swing.JButton downloadResultsButton;
     private javax.swing.JLabel fLabel;
     private javax.swing.JLabel fMeasure;
     private javax.swing.JLabel gnc;

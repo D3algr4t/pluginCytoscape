@@ -18,6 +18,10 @@ public class GRN implements IGRN {
         this.name = name;
         this.nodes = nodes;
         this.edges = edges;
+        int i = 0;
+        for (Node node1 : nodes) {
+            nodesMap.put(node1, i++);
+        }
     }
 
     @Override
@@ -32,12 +36,6 @@ public class GRN implements IGRN {
 
     @Override
     public Integer getNodeId(Node node) {
-        if (nodesMap.isEmpty()) {
-            int i = 0;
-            for (Node node1 : nodes) {
-                nodesMap.put(node1, i++);
-            }
-        }
         return nodesMap.get(node);
     }
 

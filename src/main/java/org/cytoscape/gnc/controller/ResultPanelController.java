@@ -23,6 +23,7 @@ public class ResultPanelController {
         this.network = network;
         this.result = result;
         
+        network.addGNCInfo(result);
         rv = new MainResultsView(this);
         CySwing.addPanel(rv);
         
@@ -30,11 +31,10 @@ public class ResultPanelController {
     }
     
     public void dispose() {
-        result = null;
-        
-        CySwing.removePanel(rv);
-        rv = null;
         panels.remove(network.getCyNetwork());
+        CySwing.removePanel(rv, panels.isEmpty());
+        rv = null;
+        result = null;
     }
     
     public GNCResult getResult() {

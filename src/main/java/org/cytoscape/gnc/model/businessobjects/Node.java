@@ -2,6 +2,7 @@ package org.cytoscape.gnc.model.businessobjects;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.cytoscape.model.CyRow;
 
 /**
  * @license Apache License V2 <http://www.apache.org/licenses/LICENSE-2.0.html>
@@ -9,11 +10,13 @@ import java.util.List;
  */
 public class Node {
     private final String name;
+    private final CyRow cyRow;
     private final List<Edge> edges = new ArrayList();
     
-    public Node(String name)
+    public Node(String name, CyRow cyRow)
     {
         this.name = name;
+        this.cyRow = cyRow;
     }
     
     public List<Edge> getEdges()
@@ -27,6 +30,10 @@ public class Node {
     
     public String getName() {
         return this.name;
+    }
+    
+    public CyRow getCyRow() {
+        return this.cyRow;
     }
 
     @Override
