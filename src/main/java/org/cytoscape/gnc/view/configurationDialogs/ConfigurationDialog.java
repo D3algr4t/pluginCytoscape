@@ -32,7 +32,7 @@ public class ConfigurationDialog extends javax.swing.JDialog {
         preloadedDatabases.put("GeneMania (Yeast)", "/databases/GeneMania-Yeast.txt");
         preloadedDatabases.put("SGD", "/databases/SGD.txt");
         preloadedDatabases.put("YeastNet (V2)", "/databases/YeastNetV2.txt");
-        preloadedDatabases.put("HSA000203", "/databases/hsa000203.txt");
+        preloadedDatabases.put("HSA000230", "/databases/hsa000230.txt");
         
         databaseListModel = new DefaultListModel();
         for (String database : preloadedDatabases.keySet()) {
