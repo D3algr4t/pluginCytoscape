@@ -3,17 +3,15 @@ package org.cytoscape.gnc.model.logic;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import org.cytoscape.gnc.model.businessobjects.Edge;
 import org.cytoscape.gnc.model.businessobjects.GNCResult;
 import org.cytoscape.gnc.model.businessobjects.IGRN;
@@ -93,12 +91,21 @@ public class GNC {
                 pm.setProgress(coherenceMatrixProgressSection * i / threadCount);
             }
             
+            if (isInterrupted) {
+                throw new InterruptedException("GNC execution was cancelled");
+            }
             pm.setStatus("Calculating PPV and F-Measure");
-            calculateMeasures(network, db, commonGenes).get();
+            calculateMeasures(network, db, commonGenes);
 
+            if (isInterrupted) {
+                throw new InterruptedException("GNC execution was cancelled");
+            }
             pm.setStatus("Calculating GNC");
             calculateGNC(networkMatrix, dbMatrix, positions, commonGenesCount);
 
+            if (isInterrupted) {
+                throw new InterruptedException("GNC execution was cancelled");
+            }
             return new GNCResult(network, db, Measures.GNC, Measures.ppv, Measures.fMeasure, commonGenes.toArray(new Node[commonGenes.size()]), Measures.coherenceMatrix);
         } catch (AnalysisErrorException ex) {
             throw ex;
@@ -109,18 +116,14 @@ public class GNC {
         }
     }
     
-    private Future<Void> calculateMeasures(final IGRN network, final IGRN db, final Set<Node> commonGenes) throws InterruptedException {
-        return pool.submit(new Callable() {
-            @Override
-            public Void call() throws InterruptedException {
-                int FP = 0;
-                List<Edge> fnEdges= new LinkedList(db.getEdges());
-                int i = 0;
-                for (Edge inEdge : network.getEdges()) {
-                    boolean enc = false;
+    private void calculateMeasures(final IGRN network, final IGRN db, final Set<Node> commonGenes) throws InterruptedException, ExecutionException {
+        final ConcurrentLinkedQueue<Edge> fnEdges= new ConcurrentLinkedQueue<Edge>(db.getEdges());
+        for (final Edge inEdge : network.getEdges()) {
+            completionService.submit(new Callable<Boolean>() {
+                @Override
+                public Boolean call() throws InterruptedException {
                     if (!commonGenes.contains(inEdge.getSource()) || !commonGenes.contains(inEdge.getTarget())) {
-                        FP++;
-                        continue;
+                        return true;
                     }
 
                     for (Iterator<Edge> it = fnEdges.iterator(); it.hasNext();) {
@@ -131,27 +134,33 @@ public class GNC {
                         Edge dbEdge = it.next();
                         if (inEdge.equals(dbEdge)) {
                             it.remove();
-                            enc = true;
-                            break;
+                            return false;
                         }
                     }
-                    if (!enc) {
-                        FP++;
-                    }
-
-                    pm.setProgress(coherenceMatrixProgressSection + (measureProgressSection * i++ / network.getEdges().size()));
+                    
+                    return true;
                 }
-                
-                int FN = fnEdges.size();
-                int TP = network.getEdges().size() - FP;
-        //        int TN = db.getEdges().size() - FN;
+            });
+        }
 
-                Measures.ppv = (float)TP / (TP + FP);
-                Measures.recall = (float)TP / (TP + FN);
-                Measures.fMeasure = 2.0F * Measures.ppv * Measures.recall / (Measures.ppv + Measures.recall);
-                return null;
+        int FP = 0;
+        for (int i = 0; i < network.getEdges().size(); i++) {
+            if (isInterrupted) {
+                throw new InterruptedException("GNC execution was cancelled");
             }
-        });
+            if ((boolean)completionService.take().get()) {
+                FP++;
+            }
+            pm.setProgress(coherenceMatrixProgressSection + (measureProgressSection * i / network.getEdges().size()));
+        }
+        
+        int FN = fnEdges.size();
+        int TP = network.getEdges().size() - FP;
+//        int TN = db.getEdges().size() - FN;
+
+        Measures.ppv = (float)TP / (TP + FP);
+        Measures.recall = (float)TP / (TP + FN);
+        Measures.fMeasure = 2.0F * Measures.ppv * Measures.recall / (Measures.ppv + Measures.recall);
     }
     
     private void calculateGNC(final int[][] networkMatrix, final int[][] dbMatrix, final Map<Integer, Position> positions, final int commonGenesCount) throws InterruptedException, ExecutionException {
