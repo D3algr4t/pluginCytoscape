@@ -7,7 +7,7 @@ import org.cytoscape.application.swing.CySwingApplication;
 import org.cytoscape.gnc.controller.NetworkController;
 import org.cytoscape.gnc.controller.actions.MenuAction;
 import org.cytoscape.gnc.controller.listener.NetworkClosedListener;
-import org.cytoscape.gnc.controller.tasks.ImportGFDNetVisualStylesTask;
+import org.cytoscape.gnc.controller.tasks.ImportGNCVisualStylesTask;
 import org.cytoscape.gnc.controller.utils.CySwing;
 import org.cytoscape.io.read.VizmapReaderManager;
 import org.cytoscape.model.events.NetworkAboutToBeDestroyedListener;
@@ -39,7 +39,7 @@ public class GNC extends AbstractCyActivator {
         MenuAction menuAction = new MenuAction(taskManager);
         registerService(context, menuAction, CyAction.class, new Properties());
         
-        taskManager.execute(new TaskIterator(new ImportGFDNetVisualStylesTask(visualMappingManager, vizmapReaderManager)));
+        taskManager.execute(new TaskIterator(new ImportGNCVisualStylesTask(visualMappingManager, vizmapReaderManager)));
         
         serviceRegistrar.registerService(new NetworkClosedListener(), NetworkAboutToBeDestroyedListener.class, new Properties());
     }

@@ -109,8 +109,8 @@
             <visualProperty name="EDGE_LABEL_TRANSPARENCY" default="255"/>
             <visualProperty name="EDGE_UNSELECTED_PAINT" default="#FF9999">
                 <continuousMapping attributeType="float" attributeName="GNC">
-                    <continuousMappingPoint lesserValue="#333333" greaterValue="#333333" equalValue="#333333" attrValue="0.0"/>
-                    <continuousMappingPoint lesserValue="#E5E5E5" greaterValue="#CCCCCC" equalValue="#E5E5E5" attrValue="1.0"/>
+                    <continuousMappingPoint lesserValue="#E5E5E5" greaterValue="#CCCCCC" equalValue="#E5E5E5" attrValue="0.0"/>
+                    <continuousMappingPoint lesserValue="#333333" greaterValue="#333333" equalValue="#333333" attrValue="1.0"/>
                 </continuousMapping>
             </visualProperty>
             <visualProperty name="EDGE_LINE_TYPE" default="SOLID"/>

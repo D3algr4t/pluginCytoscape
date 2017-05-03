@@ -13,12 +13,12 @@ import org.cytoscape.work.TaskMonitor;
  * @license Apache License V2 <http://www.apache.org/licenses/LICENSE-2.0.html>
  * @author Juan José Díaz Montaña
  */
-public class ImportGFDNetVisualStylesTask extends AbstractTask {
+public class ImportGNCVisualStylesTask extends AbstractTask {
     private final String GNC_VIZMAP_FILE = "style/gncstyle.xml";
     private final VisualMappingManager visualMappingManager;
     private final VizmapReaderManager vizmapReaderManager;
 
-    public ImportGFDNetVisualStylesTask(VisualMappingManager visualMappingManager, VizmapReaderManager vizmapReaderManager) {
+    public ImportGNCVisualStylesTask(VisualMappingManager visualMappingManager, VizmapReaderManager vizmapReaderManager) {
         this.visualMappingManager = visualMappingManager;
         this.vizmapReaderManager = vizmapReaderManager;
     }
