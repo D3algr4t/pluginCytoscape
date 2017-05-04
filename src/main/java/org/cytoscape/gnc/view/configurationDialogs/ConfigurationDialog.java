@@ -94,15 +94,13 @@ public class ConfigurationDialog extends javax.swing.JDialog {
         databasePanelLayout.setHorizontalGroup(
             databasePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(databasePanelLayout.createSequentialGroup()
-                .addGroup(databasePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(databasePanelLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 371, Short.MAX_VALUE))
-                    .addGroup(databasePanelLayout.createSequentialGroup()
-                        .addGap(79, 79, 79)
-                        .addComponent(loadCustomDatabaseButton)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 371, Short.MAX_VALUE)
                 .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, databasePanelLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(loadCustomDatabaseButton)
+                .addGap(98, 98, 98))
         );
         databasePanelLayout.setVerticalGroup(
             databasePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -124,7 +122,7 @@ public class ConfigurationDialog extends javax.swing.JDialog {
             }
         });
 
-        explanationLabel.setText("<html>Select a biological database to compare your network with using GNC. You can use one fo our pre-loaded databases or load you own one in CSV format.</html>");
+        explanationLabel.setText("<html>Select a biological database to compare your network with using GNC. You can select one of our pre-loaded databases or load you own one in CSV format.</html>");
         explanationLabel.setPreferredSize(new java.awt.Dimension(958, 48));
         explanationLabel.setSize(new java.awt.Dimension(45, 48));
 

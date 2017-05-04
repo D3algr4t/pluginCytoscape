@@ -83,18 +83,14 @@
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" attributes="0">
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jScrollPane1" pref="371" max="32767" attributes="0"/>
-                      </Group>
-                      <Group type="102" attributes="0">
-                          <EmptySpace min="-2" pref="79" max="-2" attributes="0"/>
-                          <Component id="loadCustomDatabaseButton" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                      </Group>
-                  </Group>
                   <EmptySpace max="-2" attributes="0"/>
+                  <Component id="jScrollPane1" pref="371" max="32767" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+              </Group>
+              <Group type="102" alignment="1" attributes="0">
+                  <EmptySpace max="32767" attributes="0"/>
+                  <Component id="loadCustomDatabaseButton" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="98" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -152,7 +148,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="explanationLabel">
       <Properties>
-        <Property name="text" type="java.lang.String" value="&lt;html&gt;Select a biological database to compare your network with using GNC. You can use one fo our pre-loaded databases or load you own one in CSV format.&lt;/html&gt;"/>
+        <Property name="text" type="java.lang.String" value="&lt;html&gt;Select a biological database to compare your network with using GNC. You can select one of our pre-loaded databases or load you own one in CSV format.&lt;/html&gt;"/>
         <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
           <Dimension value="[958, 48]"/>
         </Property>
