@@ -188,6 +188,7 @@ public class GNC {
         }
 
         float intialProgress = coherenceMatrixProgressSection + measureProgressSection;
+        Measures.GNC = 0;
         for (int i = 0; i < commonGenesCount; i++) {
             if (isInterrupted) {
                 throw new InterruptedException("GNC execution was cancelled");
