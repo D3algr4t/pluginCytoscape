@@ -1,6 +1,5 @@
 package org.cytoscape.gnc.view.configurationDialogs;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,6 +7,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import org.cytoscape.gnc.controller.tasks.ExecuteGNCTask;
 import org.cytoscape.gnc.controller.utils.CySwing;
+import org.cytoscape.gnc.model.businessobjects.DBFile;
 import org.cytoscape.work.Task;
 import org.cytoscape.work.TaskManager;
 
@@ -17,22 +17,24 @@ import org.cytoscape.work.TaskManager;
  */
 public class ConfigurationDialog extends javax.swing.JDialog {
     private final TaskManager taskManager;
-    private final Map<String, String> preloadedDatabases = new HashMap<String, String>();
-    private final Map<String, String> customDatabases = new HashMap<String, String>();
-    private final DefaultListModel<String> databaseListModel; 
+    private final Map<String, DBFile> preloadedDatabases = new HashMap<String, DBFile>();
+    private final Map<String, DBFile> customDatabases = new HashMap<String, DBFile>();
+    private final DefaultListModel<String> databaseListModel;
+    private final CSVDelimiterSelector csvDelimiterSelector = new  CSVDelimiterSelector();
+    private File currentFolder;
     
     /**
      * Creates new form NewJDialog
      */
     public ConfigurationDialog(TaskManager taskManager) {
         super(CySwing.getDesktopJFrame(), true);
-        preloadedDatabases.put("Biogrid (Human)", "/databases/BioGrid-Human.txt");
-        preloadedDatabases.put("Biogrid (Yeast)", "/databases/BioGrid-Yeast.txt");
-        preloadedDatabases.put("GeneMania (Human)", "/databases/GeneMania-Human.txt");
-        preloadedDatabases.put("GeneMania (Yeast)", "/databases/GeneMania-Yeast.txt");
-        preloadedDatabases.put("SGD", "/databases/SGD.txt");
-        preloadedDatabases.put("YeastNet (V2)", "/databases/YeastNetV2.txt");
-        preloadedDatabases.put("HSA000230", "/databases/hsa000230.txt");
+        preloadedDatabases.put("Biogrid (Human)", new DBFile("/databases/BioGrid-Human.txt", ',', true));
+        preloadedDatabases.put("Biogrid (Yeast)", new DBFile("/databases/BioGrid-Yeast.txt", ',', true));
+        preloadedDatabases.put("GeneMania (Human)", new DBFile("/databases/GeneMania-Human.txt", ',', true));
+        preloadedDatabases.put("GeneMania (Yeast)", new DBFile("/databases/GeneMania-Yeast.txt", ',', true));
+        preloadedDatabases.put("SGD", new DBFile("/databases/SGD.txt", ',', true));
+        preloadedDatabases.put("YeastNet (V2)", new DBFile("/databases/YeastNetV2.txt", ',', true));
+        preloadedDatabases.put("HSA000230", new DBFile("/databases/hsa000230.txt", ',', true));
         
         databaseListModel = new DefaultListModel();
         for (String database : preloadedDatabases.keySet()) {
@@ -59,6 +61,7 @@ public class ConfigurationDialog extends javax.swing.JDialog {
         jScrollPane1 = new javax.swing.JScrollPane();
         databaseList = new javax.swing.JList();
         runGNCButton = new javax.swing.JButton();
+        explanationLabel = new javax.swing.JLabel();
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -91,18 +94,20 @@ public class ConfigurationDialog extends javax.swing.JDialog {
         databasePanelLayout.setHorizontalGroup(
             databasePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(databasePanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1)
+                .addGroup(databasePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(databasePanelLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 371, Short.MAX_VALUE))
+                    .addGroup(databasePanelLayout.createSequentialGroup()
+                        .addGap(79, 79, 79)
+                        .addComponent(loadCustomDatabaseButton)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(databasePanelLayout.createSequentialGroup()
-                .addGap(79, 79, 79)
-                .addComponent(loadCustomDatabaseButton)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         databasePanelLayout.setVerticalGroup(
             databasePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, databasePanelLayout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 255, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(loadCustomDatabaseButton)
                 .addContainerGap())
@@ -119,24 +124,31 @@ public class ConfigurationDialog extends javax.swing.JDialog {
             }
         });
 
+        explanationLabel.setText("<html>Select a biological database to compare your network with using GNC. You can use one fo our pre-loaded databases or load you own one in CSV format.</html>");
+        explanationLabel.setPreferredSize(new java.awt.Dimension(958, 48));
+        explanationLabel.setSize(new java.awt.Dimension(45, 48));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(databasePanel)
-                    .addComponent(runGNCButton, javax.swing.GroupLayout.DEFAULT_SIZE, 364, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(databasePanel, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(runGNCButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(explanationLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(databasePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+                .addComponent(explanationLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(runGNCButton)
+                .addComponent(databasePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(runGNCButton, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -151,43 +163,45 @@ public class ConfigurationDialog extends javax.swing.JDialog {
                 : null;
         setVisible(false);
 
+        DBFile dbFile = this.preloadedDatabases.get(database);
+        if (dbFile == null) {
+            dbFile = this.customDatabases.get(database);
+        }
         if (database == null) {
             CySwing.displayPopUpMessage("No database selected.");
             return;
         }
         
-        BufferedReader br;
-        if (this.preloadedDatabases.containsKey(database)) {
-            br = new BufferedReader(new java.io.InputStreamReader(getClass().getClassLoader().getResourceAsStream((String)this.preloadedDatabases.get(database))));
-        } else {
-            try {
-                br = new BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(database)));
-                database = new File(database).getName();
-            } catch (java.io.FileNotFoundException ex) {
-                CySwing.displayPopUpMessage("Database file not found.");
-                customDatabases.remove(database);
-                databaseListModel.removeElement(database);
-                return;
-            }
-        }
-        
-        taskManager.execute(new org.cytoscape.work.TaskIterator(new Task[] { new ExecuteGNCTask(database, br) }));
+        taskManager.execute(new org.cytoscape.work.TaskIterator(new Task[] { new ExecuteGNCTask(dbFile, this) }));
     }//GEN-LAST:event_runGNCButtonActionPerformed
 
     private void loadCustomDatabaseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadCustomDatabaseButtonActionPerformed
         JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setCurrentDirectory(currentFolder);
+        fileChooser.setAccessory(csvDelimiterSelector);
         int returnValue = fileChooser.showOpenDialog(this);
         if (returnValue == 0) {
-            File selectedFile = fileChooser.getSelectedFile();
-            customDatabases.put(selectedFile.getAbsolutePath(), selectedFile.getAbsolutePath());
-            databaseListModel.addElement(selectedFile.getAbsolutePath());
-            databaseList.setSelectedValue(selectedFile.getAbsolutePath(), true);
+            currentFolder = new File(fileChooser.getSelectedFile().getParent());
+            String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+            char csvDelimiter = csvDelimiterSelector.getDelimiter();
+            DBFile  dbFile = new DBFile(filePath, csvDelimiter);
+            if (!databaseListModel.contains(filePath)) {
+                databaseListModel.addElement(filePath);
+            }
+            customDatabases.put(filePath, dbFile);
+            databaseList.setSelectedValue(filePath, true);
         }
     }//GEN-LAST:event_loadCustomDatabaseButtonActionPerformed
     
+    public void removeDB(DBFile dbFile) {
+       customDatabases.remove(dbFile.getPath());
+       databaseListModel.removeElement(dbFile.getPath());
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JList databaseList;
     private javax.swing.JLayeredPane databasePanel;
+    private javax.swing.JLabel explanationLabel;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton loadCustomDatabaseButton;

@@ -56,9 +56,10 @@ public class GNCResult {
     }
     
     public void printMatrixToFile(String path) throws IOException {
+        char csvDelimiter = ';';
         try (BufferedWriter fw = new BufferedWriter(new FileWriter(path))) {
             for (Node gene : genes) {
-                fw.write("," + gene.getName());
+                fw.write(csvDelimiter + gene.getName());
             }
             fw.newLine();
 
@@ -66,7 +67,7 @@ public class GNCResult {
             for (Node gene : genes) {
                 fw.write(gene.getName());
                 for (float coherence : cohrenceMatrix[i]) {
-                    fw.write("," + coherence);
+                    fw.write("" + csvDelimiter + coherence);
                 }
                 fw.newLine();
                 i++;

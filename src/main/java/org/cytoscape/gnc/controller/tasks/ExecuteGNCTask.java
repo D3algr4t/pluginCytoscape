@@ -1,15 +1,17 @@
 package org.cytoscape.gnc.controller.tasks;
 
-import java.io.BufferedReader;
 import org.cytoscape.gnc.controller.NetworkController;
 import org.cytoscape.gnc.controller.ResultPanelController;
 import org.cytoscape.gnc.controller.utils.CySwing;
 import org.cytoscape.gnc.controller.utils.CytoscapeTaskMonitor;
 import org.cytoscape.gnc.controller.utils.NetworkAdapter;
+import org.cytoscape.gnc.model.businessobjects.DBFile;
 import org.cytoscape.gnc.model.businessobjects.GNCResult;
 import org.cytoscape.gnc.model.businessobjects.IGRN;
+import org.cytoscape.gnc.model.businessobjects.exceptions.DatabaseParsingException;
 import org.cytoscape.gnc.model.businessobjects.utils.ProgressMonitor;
 import org.cytoscape.gnc.model.logic.GNC;
+import org.cytoscape.gnc.view.configurationDialogs.ConfigurationDialog;
 import org.cytoscape.work.AbstractTask;
 import org.cytoscape.work.TaskMonitor;
 
@@ -19,13 +21,13 @@ import org.cytoscape.work.TaskMonitor;
  */
 public class ExecuteGNCTask extends AbstractTask {
     private GNC gnc;
-    private final String dbName;
-    private final BufferedReader br;
+    private final DBFile dbFile;
+    private final ConfigurationDialog configurationDialog;
     
-    public ExecuteGNCTask(String dbName, BufferedReader br)
+    public ExecuteGNCTask(DBFile dbFile, ConfigurationDialog configurationDialog)
     {
-        this.dbName = dbName;
-        this.br = br;
+        this.dbFile = dbFile;
+        this.configurationDialog = configurationDialog;
     }
     
     @Override
@@ -37,8 +39,8 @@ public class ExecuteGNCTask extends AbstractTask {
             CySwing.displayPopUpMessage(ex.getMessage());
             return;
         }
-
-        if (br == null) {
+        
+        if (dbFile == null) {
             CySwing.displayPopUpMessage("No database selected.");
             return;
         }
@@ -46,12 +48,16 @@ public class ExecuteGNCTask extends AbstractTask {
         try {
             ProgressMonitor pm = new CytoscapeTaskMonitor(tm);
             gnc = new GNC(pm);
-            IGRN db = NetworkAdapter.FileToGRN(this.dbName, this.br);
+            tm.setTitle("Loading biological database");
+            IGRN db = NetworkAdapter.FileToGRN(dbFile);
             tm.setTitle("Executing GNC analysis");
             GNCResult result = gnc.execute(network.getGraph(), db);
             pm.setStatus("Displaying the results.");
             new ResultPanelController(network, result);
             CySwing.displayPopUpMessage("GNC anlysis succesfully completed!");
+        } catch (DatabaseParsingException ex){
+            configurationDialog.removeDB(dbFile);
+            CySwing.displayPopUpMessage(ex.getMessage());
         } catch (Exception ex) {
             CySwing.displayPopUpMessage(ex.getMessage());
         }

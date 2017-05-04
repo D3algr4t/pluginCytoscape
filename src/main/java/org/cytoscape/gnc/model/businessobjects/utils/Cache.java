@@ -41,4 +41,8 @@ public class Cache<T> {
     public int size() {
         return cache.size();
     }
+    
+    public boolean isEmpty() {
+        return cache.isEmpty();
+    }
 }

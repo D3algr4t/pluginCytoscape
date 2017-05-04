@@ -1,11 +1,14 @@
 package org.cytoscape.gnc.controller.utils;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.cytoscape.gnc.model.businessobjects.DBFile;
 import org.cytoscape.gnc.model.businessobjects.Edge;
 import org.cytoscape.gnc.model.businessobjects.GRN;
 import org.cytoscape.gnc.model.businessobjects.IGRN;
@@ -54,15 +57,16 @@ public class NetworkAdapter {
         return new GRN(name, (Node[])nodes.values().toArray(new Node[nodes.size()]), edges);
     }
     
-    public static IGRN FileToGRN(String file, BufferedReader br) {
+    public static IGRN FileToGRN(DBFile dbFile) {
         Cache<Node> nodesCache = new Cache();
         List<Edge> edges = new ArrayList();
         
         try {
+            BufferedReader br = dbFile.getBufferedReader();
             String line;
             while ((line = br.readLine()) != null) {
-                String[] nodeNames = line.split(",");
-                if (nodeNames.length != 2) {
+                String[] nodeNames = line.split("" + dbFile.getDelimiter());
+                if (nodeNames.length < 2) {
                     continue;
                 }
 
@@ -73,10 +77,16 @@ public class NetworkAdapter {
                 node1.addEdge(edge);
                 node2.addEdge(edge);
             }
+        } catch (FileNotFoundException e) {
+            throw new DatabaseParsingException("Database file not found.", e);
         } catch (IOException e) {
             throw new DatabaseParsingException(e);
         }
         
-        return new GRN(file, nodesCache.getAll().toArray(new Node[nodesCache.size()]), edges);
+        if (nodesCache.isEmpty() || edges.isEmpty()) {
+            throw new DatabaseParsingException();
+        }
+        
+        return new GRN(new File(dbFile.getPath()).getName(), nodesCache.getAll().toArray(new Node[nodesCache.size()]), edges);
     }
 }

@@ -16,7 +16,19 @@ public class DatabaseParsingException extends RuntimeException {
     private final Throwable ex;
         
     private static final String DefaultMessage = "The database file provided couldn't be parsed.";
-    
+
+    /**
+     * Constructs a <code>DatabaseParsingException</code> with the
+     * default detail message and optional exception that was
+     * raised while loading the class.
+     *
+     * @param ex the exception that was raised while loading the class
+     * @since 1.2
+     */
+    public DatabaseParsingException() {
+        this(null);
+    }
+
     /**
      * Constructs a <code>DatabaseParsingException</code> with the
      * default detail message and optional exception that was
@@ -26,7 +38,7 @@ public class DatabaseParsingException extends RuntimeException {
      * @since 1.2
      */
     public DatabaseParsingException(Throwable ex) {
-        this(DefaultMessage, null);
+        this(DefaultMessage, ex);
     }
     
     /**
