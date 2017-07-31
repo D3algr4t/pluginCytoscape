@@ -148,6 +148,7 @@ public final class NetworkController {
         for (VisualStyle style : visualMappingManager.getAllVisualStyles()) {
             if (style.getTitle().equals("GNC")) {
                 style.apply(networkView);
+                visualMappingManager.setVisualStyle(style, networkView);
                 break;
             }
         }
