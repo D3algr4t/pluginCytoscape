@@ -1,7 +1,7 @@
 package org.cytoscape.gnc.view.configurationDialogs;
 
 import java.io.File;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
@@ -17,8 +17,8 @@ import org.cytoscape.work.TaskManager;
  */
 public class ConfigurationDialog extends javax.swing.JDialog {
     private final TaskManager taskManager;
-    private final Map<String, DBFile> preloadedDatabases = new HashMap<String, DBFile>();
-    private final Map<String, DBFile> customDatabases = new HashMap<String, DBFile>();
+    private final Map<String, DBFile> preloadedDatabases = new LinkedHashMap<String, DBFile>();
+    private final Map<String, DBFile> customDatabases = new LinkedHashMap<String, DBFile>();
     private final DefaultListModel<String> databaseListModel;
     private final CSVDelimiterSelector csvDelimiterSelector = new  CSVDelimiterSelector();
     private File currentFolder;
