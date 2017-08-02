@@ -45,8 +45,7 @@ public class GRN implements IGRN {
     }
 
     @Override  
-    public float getDensity()
-    {
+    public float getDensity() {
         return 2.0F * (float)this.edges.size() / (this.nodes.length * (this.nodes.length - 1));
     }
 }

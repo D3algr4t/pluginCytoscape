@@ -13,14 +13,12 @@ public class Node {
     private final CyRow cyRow;
     private final List<Edge> edges = new ArrayList();
     
-    public Node(String name, CyRow cyRow)
-    {
+    public Node(String name, CyRow cyRow) {
         this.name = name;
         this.cyRow = cyRow;
     }
     
-    public List<Edge> getEdges()
-    {
+    public List<Edge> getEdges() {
         return this.edges;
     }
     
@@ -37,8 +35,7 @@ public class Node {
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
+    public boolean equals(Object obj) {
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
@@ -49,8 +46,7 @@ public class Node {
     }
     
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         int hash = 7;
         hash = 59 * hash + (this.name != null ? this.name.hashCode() : 0);
         return hash;

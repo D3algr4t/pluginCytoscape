@@ -24,8 +24,7 @@ public class ExecuteGNCTask extends AbstractTask {
     private final DBFile dbFile;
     private final ConfigurationDialog configurationDialog;
     
-    public ExecuteGNCTask(DBFile dbFile, ConfigurationDialog configurationDialog)
-    {
+    public ExecuteGNCTask(DBFile dbFile, ConfigurationDialog configurationDialog) {
         this.dbFile = dbFile;
         this.configurationDialog = configurationDialog;
     }
@@ -55,7 +54,7 @@ public class ExecuteGNCTask extends AbstractTask {
             pm.setStatus("Displaying the results.");
             new ResultPanelController(network, result);
             CySwing.displayPopUpMessage("GNC anlysis succesfully completed!");
-        } catch (DatabaseParsingException ex){
+        } catch (DatabaseParsingException ex) {
             configurationDialog.removeDB(dbFile);
             CySwing.displayPopUpMessage(ex.getMessage());
         } catch (Exception ex) {

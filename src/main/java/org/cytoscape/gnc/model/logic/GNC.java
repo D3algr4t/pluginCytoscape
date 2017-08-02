@@ -72,16 +72,14 @@ public class GNC {
                     commonGenes.add(networkNode);
                     positions.add(new Position(networkNode, i, nodeId));
                     
-                    completionService.submit(new Callable()
-                    {
+                    completionService.submit(new Callable() {
                         @Override
                         public Void call() throws InterruptedException {
                             fillDistanceMatrix(network, networkNode, networkMatrix);
                             return null;
                         }
                     });
-                    completionService.submit(new Callable()
-                    {
+                    completionService.submit(new Callable() {
                         @Override
                         public Void call() throws InterruptedException {
                             fillDistanceMatrix(db, db.getNodes()[nodeId], dbMatrix);
