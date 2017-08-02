@@ -28,13 +28,10 @@ public class ConfigurationDialog extends javax.swing.JDialog {
      */
     public ConfigurationDialog(TaskManager taskManager) {
         super(CySwing.getDesktopJFrame(), true);
-        preloadedDatabases.put("Biogrid (Human)", new DBFile("/databases/BioGrid-Human.txt", ',', true));
-        preloadedDatabases.put("Biogrid (Yeast)", new DBFile("/databases/BioGrid-Yeast.txt", ',', true));
-        preloadedDatabases.put("GeneMania (Human)", new DBFile("/databases/GeneMania-Human.txt", ',', true));
-        preloadedDatabases.put("GeneMania (Yeast)", new DBFile("/databases/GeneMania-Yeast.txt", ',', true));
-        preloadedDatabases.put("SGD", new DBFile("/databases/SGD.txt", ',', true));
-        preloadedDatabases.put("YeastNet (V2)", new DBFile("/databases/YeastNetV2.txt", ',', true));
-        preloadedDatabases.put("HSA000230", new DBFile("/databases/hsa000230.txt", ',', true));
+        preloadedDatabases.put("BioGRID (Human)", new DBFile("/databases/BioGrid-Human.txt", ',', true));
+        preloadedDatabases.put("BioGRID (Yeast)", new DBFile("/databases/BioGrid-Yeast.txt", ',', true));
+        preloadedDatabases.put("Scharomyces Genome Database (SGD)", new DBFile("/databases/SGD.txt", ',', true));
+        preloadedDatabases.put("YeastNet (V3)", new DBFile("/databases/YeastNetV3.txt", ',', true));
         
         databaseListModel = new DefaultListModel();
         for (String database : preloadedDatabases.keySet()) {
