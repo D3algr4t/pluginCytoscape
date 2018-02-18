@@ -76,8 +76,7 @@ You might need to process the downloaded files to comply with the format describ
 Please note that this are just some example sources and there are many more.
 
 ## Reference
-Gómez-Vela, Francisco, José Antonio Lagares, and Norberto Díaz-Díaz. "Gene network coherence based on prior knowledge using direct and indirect relationships." Computational biology and chemistry 56 (2015): 142-151.
-  
+[Díaz-Montaña, J. J., F. Gómez-Vela, and N. Díaz-Díaz. "GNC-app: A new Cytoscape app to rate gene networks biological coherence using gene-gene indirect relationships." Bio Systems (2018).](https://www.sciencedirect.com/science/article/pii/S0303264717303258)
 
 ## COPYRIGHT
 * <a href="mailto:jjdiamon@alumno.upo.es">Juan José Díaz Montaña</a> (<a href="mailto:jjdiamon@alumno.upo.es">jjdiamon@alumno.upo.es</a>)
